@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fearbook - Memories of the Dead</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Butcherman&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0808 50%, #000000 100%);
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+         /* Ghost Animation */
+ .floating-ghost {
+ position: fixed;
+ right: -10px;
+ top: 50%;
+ transform: translateY(-50%);
+ width: 60px;
+ height: 80px;
+ z-index: 200;
+ pointer-events: none;
+ font-size: 48px;
+ color: rgba(255, 255, 255, 0.7);
+ text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+ filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4));
+ animation: 
+   ghostRevolve 12s linear infinite,
+   ghostBob 4s ease-in-out infinite,
+   ghostDrift 6s ease-in-out infinite;
+ transition: transform 0.3s ease, filter 0.3s ease;
+ }
+
+ @keyframes ghostRevolve {
+ from { transform: translateY(-50%) rotateY(0deg); }
+ to { transform: translateY(-50%) rotateY(360deg); }
+ }
+
+ @keyframes ghostBob {
+ 0%, 100% { transform: translateY(-50%) translateY(0px); }
+ 50% { transform: translateY(-50%) translateY(-15px); }
+ }
+
+ @keyframes ghostDrift {
+ 0%, 100% { right: -10px; }
+ 50% { right: -35px; }
+ }
+
+ .floating-ghost:hover {
+ transform: translateY(-50%) scale(1.08);
+ filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.8));
+ animation-play-state: paused;
+ }
+
+ /* Respect reduced motion preferences */
+ @media (prefers-reduced-motion: reduce) {
+ .floating-ghost {
+   animation: ghostBobReduced 2s ease-in-out infinite;
+ }
+ 
+ @keyframes ghostBobReduced {
+   0%, 100% { transform: translateY(-50%) translateY(0px); }
+   50% { transform: translateY(-50%) translateY(-5px); }
+ }
+ }
+
+        .container::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(139, 0, 0, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(75, 0, 130, 0.2) 0%, transparent 50%),
+                linear-gradient(90deg, transparent 49%, rgba(255, 0, 0, 0.03) 50%, transparent 51%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(135deg, #1a0000 0%, #330000 100%);
+            border-bottom: 2px solid #8B0000;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(139, 0, 0, 0.5);
+        }
+
+        .logo {
+            font-family: 'Creepster', cursive;
+            font-size: 32px;
+            color: #FF4444;
+            text-shadow: 2px 2px 4px #000, 0 0 10px #FF0000;
+            animation: logoFlicker 3s infinite;
+        }
+
+        @keyframes logoFlicker {
+            0%, 100% { opacity: 1; text-shadow: 2px 2px 4px #000, 0 0 10px #FF0000; }
+            50% { opacity: 0.8; text-shadow: 2px 2px 4px #000, 0 0 20px #FF0000, 0 0 30px #FF0000; }
+            75% { opacity: 0.3; }
+        }
+
+        .search-box {
+            margin-left: 600px;
+            position: relative;
+        }
+
+        .search-box input {
+            background: #1a1a1a;
+            border: 2px solid #4a0000;
+            border-radius: 20px;
+            padding: 8px 40px 8px 15px;
+            color: #e0e0e0;
+            width: 300px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #FF4444;
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.3);
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8B0000;
+        }
+
+        .nav-icons {
+            margin-left: auto;
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-icon {
+            color: #e0e0e0;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-icon:hover {
+            color: #FF4444;
+            text-shadow: 0 0 10px #FF0000;
+            transform: scale(1.1);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 60px;
+            width: 280px;
+            height: calc(100vh - 60px);
+            background: linear-gradient(180deg, #0d0d0d 0%, #1a0000 100%);
+            border-right: 2px solid #4a0000;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 50;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M20,20 Q50,5 80,20 Q95,50 80,80 Q50,95 20,80 Q5,50 20,20" fill="none" stroke="rgba(139,0,0,0.1)" stroke-width="1"/></svg>');
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(26, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid #4a0000;
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #8B0000 0%, #000 100%);
+            border: 2px solid #FF4444;
+            margin-right: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-pic::before {
+            content: '👤';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            filter: grayscale(100%) contrast(2);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-decoration: none;
+            color: #e0e0e0;
+        }
+
+        .menu-item:hover {
+            background: rgba(139, 0, 0, 0.2);
+            transform: translateX(5px);
+            box-shadow: inset 3px 0 0 #FF4444;
+        }
+
+        .menu-item.active {
+            background: rgba(139, 0, 0, 0.4);
+            box-shadow: inset 3px 0 0 #FF0000;
+            transform: translateX(5px);
+        }
+
+        .menu-item i {
+            margin-right: 15px;
+            font-size: 18px;
+            color: #8B0000;
+            width: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            margin-right: 320px;
+            margin-top: 60px;
+            padding: 30px 20px;
+            z-index: 10;
+            position: relative;
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            position: fixed;
+            right: 0;
+            top: 60px;
+            width: 320px;
+            height: calc(100vh - 60px);
+            background: linear-gradient(180deg, #0d0d0d 0%, #1a0000 100%);
+            border-left: 2px solid #4a0000;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 50;
+        }
+
+        .widget {
+            background: rgba(26, 0, 0, 0.3);
+            border: 1px solid #4a0000;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .widget-title {
+            font-family: 'Butcherman', cursive;
+            color: #FF4444;
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .friend-suggestion {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .friend-suggestion:hover {
+            background: rgba(139, 0, 0, 0.1);
+            transform: translateX(3px);
+        }
+
+        .friend-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #4a0000 0%, #000 100%);
+            border: 2px solid #8B0000;
+            margin-right: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .friend-pic::before {
+            content: '👻';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+        }
+
+        .friend-info h4 {
+            color: #e0e0e0;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .friend-mutual {
+            color: #888;
+            font-size: 12px;
+        }
+
+        /* Cobweb decorations */
+        .cobweb {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M10,10 L50,30 L90,10 M10,10 L30,50 L10,90 M50,30 L50,70 M90,10 L70,50 L90,90 M30,50 L70,50 M10,90 L50,70 L90,90" stroke="rgba(139,0,0,0.3)" stroke-width="1" fill="none"/></svg>');
+            opacity: 0.6;
+        }
+
+        .cobweb-1 { top: 10px; right: 10px; }
+        .cobweb-2 { bottom: 10px; left: 10px; }
+        .cobweb-3 { top: 50%; right: 10px; transform: translateY(-50%); }
+
+        /* Glitch effect */
+        @keyframes glitch {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-2px); }
+            40% { transform: translateX(2px); }
+            60% { transform: translateX(-2px); }
+            80% { transform: translateX(2px); }
+            100% { transform: translateX(0); }
+        }
+
+        .glitch {
+            animation: glitch 0.3s infinite;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0d0d0d;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #8B0000;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FF4444;
+        }
+
+        /* Blood drip animation */
+        .blood-drip {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: linear-gradient(to bottom, #FF0000, #8B0000);
+            animation: drip 3s infinite;
+        }
+
+        @keyframes drip {
+            0% { transform: translateY(-20px); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(100px); opacity: 0; }
+        }
+
+        /* Memory timeline specific styles */
+        .page-title {
+            font-family: 'Butcherman', cursive;
+            color: #FF4444;
+            font-size: 32px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px #000, 0 0 10px #FF0000;
+            text-align: center;
+        }
+
+        .memory-timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .memory-timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #8B0000, #FF4444, #8B0000);
+            box-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+        }
+
+        .memory-item {
+            background: linear-gradient(135deg, #1a0000 0%, #0d0d0d 100%);
+            border: 2px solid #4a0000;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            position: relative;
+            margin-left: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            animation: postFloat 6s infinite ease-in-out;
+        }
+
+        @keyframes postFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-2px); }
+        }
+
+        .memory-item::before {
+            content: '';
+            position: absolute;
+            left: -42px;
+            top: 25px;
+            width: 16px;
+            height: 16px;
+            background: #FF4444;
+            border-radius: 50%;
+            border: 3px solid #8B0000;
+            box-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+        }
+
+        .memory-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #FF4444, transparent);
+            animation: bloodDrip 4s infinite;
+        }
+
+        @keyframes bloodDrip {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .memory-item:hover {
+            border-color: #8B0000;
+            box-shadow: 0 12px 40px rgba(255, 68, 68, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .memory-date {
+            font-family: 'Butcherman', cursive;
+            color: #FF4444;
+            font-size: 16px;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .memory-content {
+            color: #ddd;
+            font-family: 'Courier New', monospace;
+            line-height: 1.8;
+            font-style: italic;
+            font-size: 14px;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .memory-author {
+            color: #888;
+            font-size: 12px;
+            text-align: right;
+            font-family: 'Butcherman', cursive;
+            border-top: 1px solid #4a0000;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="floating-ghost" style="top: 20%; right: -15px; font-size: 40px; animation-delay: 0s;">👻</div>
+<div class="floating-ghost" style="top: 50%; right: -30px; font-size: 55px; animation-delay: 2s;">👻</div>
+<div class="floating-ghost" style="top: 80%; right: -10px; font-size: 48px; animation-delay: 4s;">👻</div>
+<div class="floating-ghost" style="top: 20%; left: 15%; font-size: 48px; animation-delay: 0s;">👻</div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">Fearbook</div>
+            <div class="search-box">
+                <input type="text" placeholder="Search the damned...">
+                <i class="fas fa-search"></i>
+            </div>
+  <div class="nav-icons">
+    <i class="nav-icon fas fa-home" id="homeIcon" title="Return to Nightmare Feed"></i>
+    <i class="nav-icon fas fa-users" id="peopleIcon" title="Find Lost Souls"></i>
+    <i class="nav-icon fas fa-bell"></i>
+    <i class="nav-icon fas fa-envelope"></i>
+    <i class="nav-icon fas fa-user-circle"></i>
+</div>
+
+        </header>
+
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="cobweb cobweb-1"></div>
+            <div class="profile-section">
+                <div class="profile-pic"></div>
+                <div>
+                    <h3 style="color: #FF4444; font-family: 'Butcherman', cursive;">Dark Soul</h3>
+                    <p style="color: #888; font-size: 12px;">Lost in the shadows</p>
+                </div>
+            </div>
+
+            <nav>
+                <a href="nightmare-feed.html" class="menu-item">
+                    <i class="fas fa-rss"></i>
+                    <span>Nightmare Feed</span>
+                </a>
+                <a href="haunted-friends.html" class="menu-item">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Haunted Friends</span>
+                </a>
+                <a href="cult-groups.html" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Cult Groups</span>
+                </a>
+                <a href="black-market.html" class="menu-item">
+                    <i class="fas fa-store"></i>
+                    <span>Black Market</span>
+                </a>
+                <a href="memories-of-the-dead.html" class="menu-item active">
+                    <i class="fas fa-clock"></i>
+                    <span>Memories of the Dead</span>
+                </a>
+                
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1 class="page-title">Echoes from Beyond</h1>
+            
+            <div class="memory-timeline">
+                <div class="memory-item">
+                    <div class="memory-date">October 31st, 1692</div>
+                    <div class="memory-content">
+                        "The trials have ended, but our spirits remain. We gather in the darkness, seeking justice for the innocent blood spilled in Salem's streets."
+                    </div>
+                    <div class="memory-author">- Bridget Bishop's Spirit</div>
+                </div>
+                
+                <div class="memory-item">
+                    <div class="memory-date">December 13th, 1888</div>
+                    <div class="memory-content">
+                        "The fog grows thicker each night in Whitechapel. I watch from the shadows as fear consumes the living. They cannot see us, but we see everything."
+                    </div>
+                    <div class="memory-author">- Anonymous Victorian Ghost</div>
+                </div>
+                
+                <div class="memory-item">
+                    <div class="memory-date">April 15th, 1912</div>
+                    <div class="memory-content">
+                        "The water was so cold, so dark. We thought we were unsinkable. Now we drift in eternal ice, warning others of humanity's hubris."
+                    </div>
+                    <div class="memory-author">- Titanic Passenger Spirit</div>
+                </div>
+                
+                <div class="memory-item">
+                    <div class="memory-date">September 16th, 2025</div>
+                    <div class="memory-content">
+                        "Even in this digital age, the old ways persist. Social networks for the dead... who would have imagined such a thing in life?"
+                    </div>
+                    <div class="memory-author">- Recently Departed Soul</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="right-sidebar">
+            <div class="cobweb cobweb-2"></div>
+            <div class="cobweb cobweb-3"></div>
+
+            <div class="widget">
+                <h3 class="widget-title">Spirits You May Know</h3>
+                <div class="friend-suggestion">
+                    <div class="friend-pic"></div>
+                    <div class="friend-info">
+                        <h4>Banshee Mary</h4>
+                        <div class="friend-mutual">3 mutual haunts</div>
+                    </div>
+                </div>
+                <div class="friend-suggestion">
+                    <div class="friend-pic"></div>
+                    <div class="friend-info">
+                        <h4>The Phantom</h4>
+                        <div class="friend-mutual">7 mutual possessions</div>
+                    </div>
+                </div>
+                <div class="friend-suggestion">
+                    <div class="friend-pic"></div>
+                    <div class="friend-info">
+                        <h4>Grave Dancer</h4>
+                        <div class="friend-mutual">1 mutual séance</div>
+                    </div>
+                </div>
+                <div class="friend-suggestion">
+                    <div class="friend-pic"></div>
+                    <div class="friend-info">
+                        <h4>Night Crawler</h4>
+                        <div class="friend-mutual">5 mutual nightmares</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <h3 class="widget-title">Cursed Events</h3>
+                <div style="color: #888; font-size: 14px; line-height: 1.6;">
+                    <div style="margin-bottom: 10px;">
+                        <strong style="color: #FF4444;">Tonight</strong><br>
+                        Midnight Séance at Raven Cemetery
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong style="color: #FF4444;">Tomorrow</strong><br>
+                        Full Moon Ritual Gathering
+                    </div>
+                    <div>
+                        <strong style="color: #FF4444;">This Weekend</strong><br>
+                        Abandoned Hospital Exploration
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <h3 class="widget-title">Active Hauntings</h3>
+                <div style="color: #888; font-size: 14px;">
+                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                        <div style="width: 8px; height: 8px; background: #FF4444; border-radius: 50%; margin-right: 8px;"></div>
+                        Shadow Walker
+                    </div>
+                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                        <div style="width: 8px; height: 8px; background: #FF4444; border-radius: 50%; margin-right: 8px;"></div>
+                        Midnight Screamer
+                    </div>
+                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                        <div style="width: 8px; height: 8px; background: #666; border-radius: 50%; margin-right: 8px;"></div>
+                        Lost Soul (in limbo)
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // Add random glitch effects
+        setInterval(() => {
+            const elements = document.querySelectorAll('.memory-item, .widget, .menu-item');
+            const randomElement = elements[Math.floor(Math.random() * elements.length)];
+            randomElement.classList.add('glitch');
+            setTimeout(() => {
+                randomElement.classList.remove('glitch');
+            }, 300);
+        }, 5000);
+
+        // Flickering text effect
+        setInterval(() => {
+            const textElements = document.querySelectorAll('.memory-date, .widget-title');
+            const randomText = textElements[Math.floor(Math.random() * textElements.length)];
+            randomText.style.textShadow = '0 0 10px #FF0000, 0 0 20px #FF0000';
+            setTimeout(() => {
+                randomText.style.textShadow = '1px 1px 2px #000';
+            }, 150);
+        }, 3000);
+
+        // Random blood drips
+        function createBloodDrip() {
+            const drip = document.createElement('div');
+            drip.className = 'blood-drip';
+            drip.style.left = Math.random() * 100 + '%';
+            drip.style.animationDelay = Math.random() * 3 + 's';
+            document.body.appendChild(drip);
+
+            setTimeout(() => {
+                drip.remove();
+            }, 5000);
+        }
+
+        setInterval(createBloodDrip, 8000);
+
+
+        // Simple home icon functionality - add this to existing script sections
+document.addEventListener('DOMContentLoaded', function() {
+    const homeIcon = document.querySelector('.nav-icon.fa-home');
+    
+    if (homeIcon) {
+        // Add ID and click handler
+        homeIcon.id = 'homeIcon';
+        homeIcon.style.cursor = 'pointer';
+        
+        homeIcon.addEventListener('click', function() {
+            this.style.transform = 'scale(0.9)';
+            this.style.color = '#FF6666';
+            
+            setTimeout(() => {
+                window.location.href = 'nightmare-feed.html';
+            }, 150);
+        });
+        
+        // Add hover effects
+        homeIcon.addEventListener('mouseenter', function() {
+            this.style.textShadow = '0 0 15px #FF0000';
+        });
+        
+        homeIcon.addEventListener('mouseleave', function() {
+            this.style.textShadow = '';
+        });
+    }
+});
+
+// People icon functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const peopleIcon = document.getElementById('peopleIcon');
+    
+    if (peopleIcon) {
+        peopleIcon.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Prevent multiple clicks
+            if (this.classList.contains('navigating')) return;
+            this.classList.add('navigating');
+            
+            // Add visual effects
+            this.style.transform = 'scale(0.9)';
+            this.style.color = '#FF6666';
+            this.classList.add('glitch');
+            
+            setTimeout(() => {
+                window.location.href = 'people-finder.html';
+            }, 200);
+        });
+        
+        // Hover effects
+        peopleIcon.addEventListener('mouseenter', function() {
+            if (!this.classList.contains('navigating')) {
+                this.style.textShadow = '0 0 15px #FF0000';
+                this.style.transform = 'scale(1.1)';
+            }
+        });
+        
+        peopleIcon.addEventListener('mouseleave', function() {
+            if (!this.classList.contains('navigating')) {
+                this.style.textShadow = '';
+                this.style.transform = '';
+            }
+        });
+    }
+});
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fearbook - Find Lost Souls</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Butcherman&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0808 50%, #000000 100%);
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+   
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(139, 0, 0, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(75, 0, 130, 0.2) 0%, transparent 50%),
+                linear-gradient(90deg, transparent 49%, rgba(255, 0, 0, 0.03) 50%, transparent 51%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(135deg, #1a0000 0%, #330000 100%);
+            border-bottom: 2px solid #8B0000;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(139, 0, 0, 0.5);
+        }
+
+        .logo {
+            font-family: 'Creepster', cursive;
+            font-size: 32px;
+            color: #FF4444;
+            text-shadow: 2px 2px 4px #000, 0 0 10px #FF0000;
+            animation: logoFlicker 3s infinite;
+        }
+
+        @keyframes logoFlicker {
+            0%, 100% { opacity: 1; text-shadow: 2px 2px 4px #000, 0 0 10px #FF0000; }
+            50% { opacity: 0.8; text-shadow: 2px 2px 4px #000, 0 0 20px #FF0000, 0 0 30px #FF0000; }
+            75% { opacity: 0.3; }
+        }
+
+        .search-box {
+            margin-left: 600px;
+            position: relative;
+        }
+
+        .search-box input {
+            background: #1a1a1a;
+            border: 2px solid #4a0000;
+            border-radius: 20px;
+            padding: 8px 40px 8px 15px;
+            color: #e0e0e0;
+            width: 300px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #FF4444;
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.3);
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8B0000;
+        }
+
+        .nav-icons {
+            margin-left: auto;
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-icon {
+            color: #e0e0e0;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-icon:hover {
+            color: #FF4444;
+            text-shadow: 0 0 10px #FF0000;
+            transform: scale(1.1);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 60px;
+            width: 280px;
+            height: calc(100vh - 60px);
+            background: linear-gradient(180deg, #0d0d0d 0%, #1a0000 100%);
+            border-right: 2px solid #4a0000;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 50;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M20,20 Q50,5 80,20 Q95,50 80,80 Q50,95 20,80 Q5,50 20,20" fill="none" stroke="rgba(139,0,0,0.1)" stroke-width="1"/></svg>');
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(26, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid #4a0000;
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #8B0000 0%, #000 100%);
+            border: 2px solid #FF4444;
+            margin-right: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-pic::before {
+            content: '👤';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            filter: grayscale(100%) contrast(2);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-decoration: none;
+            color: #e0e0e0;
+        }
+
+        .menu-item:hover {
+            background: rgba(139, 0, 0, 0.2);
+            transform: translateX(5px);
+            box-shadow: inset 3px 0 0 #FF4444;
+        }
+
+        .menu-item.active {
+            background: rgba(139, 0, 0, 0.4);
+            box-shadow: inset 3px 0 0 #FF0000;
+            transform: translateX(5px);
+        }
+
+        .menu-item i {
+            margin-right: 15px;
+            font-size: 18px;
+            color: #8B0000;
+            width: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            margin-right: 320px;
+            margin-top: 60px;
+            padding: 30px 20px;
+            z-index: 10;
+            position: relative;
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            position: fixed;
+            right: 0;
+            top: 60px;
+            width: 320px;
+            height: calc(100vh - 60px);
+            background: linear-gradient(180deg, #0d0d0d 0%, #1a0000 100%);
+            border-left: 2px solid #4a0000;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 50;
+        }
+
+        .widget {
+            background: rgba(26, 0, 0, 0.3);
+            border: 1px solid #4a0000;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .widget-title {
+            font-family: 'Butcherman', cursive;
+            color: #FF4444;
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .friend-suggestion {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .friend-suggestion:hover {
+            background: rgba(139, 0, 0, 0.1);
+            transform: translateX(3px);
+        }
+
+        .friend-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #4a0000 0%, #000 100%);
+            border: 2px solid #8B0000;
+            margin-right: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .friend-pic::before {
+            content: '👻';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+        }
+
+        .friend-info h4 {
+            color: #e0e0e0;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .friend-mutual {
+            color: #888;
+            font-size: 12px;
+        }
+
+        /* Cobweb decorations */
+        .cobweb {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M10,10 L50,30 L90,10 M10,10 L30,50 L10,90 M50,30 L50,70 M90,10 L70,50 L90,90 M30,50 L70,50 M10,90 L50,70 L90,90" stroke="rgba(139,0,0,0.3)" stroke-width="1" fill="none"/></svg>');
+            opacity: 0.6;
+        }
+
+        .cobweb-1 { top: 10px; right: 10px; }
+        .cobweb-2 { bottom: 10px; left: 10px; }
+        .cobweb-3 { top: 50%; right: 10px; transform: translateY(-50%); }
+
+        /* Glitch effect */
+        @keyframes glitch {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-2px); }
+            40% { transform: translateX(2px); }
+            60% { transform: translateX(-2px); }
+            80% { transform: translateX(2px); }
+            100% { transform: translateX(0); }
+        }
+
+        .glitch {
+            animation: glitch 0.3s infinite;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0d0d0d;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #8B0000;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FF4444;
+        }
+
+        /* Blood drip animation */
+        .blood-drip {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: linear-gradient(to bottom, #FF0000, #8B0000);
+            animation: drip 3s infinite;
+        }
+
+        @keyframes drip {
+            0% { transform: translateY(-20px); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(100px); opacity: 0; }
+        }
+
+        /* People Finder specific styles */
+        .page-title {
+            font-family: 'Butcherman', cursive;
+            color: #FF4444;
+            font-size: 32px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px #000, 0 0 10px #FF0000;
+            text-align: center;
+        }
+
+        .search-section {
+            background: linear-gradient(135deg, #1a0000 0%, #0d0d0d 100%);
+            border: 2px solid #4a0000;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            position: relative;
+            animation: postFloat 6s infinite ease-in-out;
+        }
+
+        @keyframes postFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-2px); }
+        }
+
+        .search-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #FF4444, transparent);
+            animation: bloodDrip 4s infinite;
+        }
+
+        @keyframes bloodDrip {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            background: #0a0a0a;
+            border: 2px solid #4a0000;
+            border-radius: 25px;
+            color: #e0e0e0;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #FF4444;
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.3);
+        }
+
+        .search-input::placeholder {
+            color: #666;
+            font-style: italic;
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: rgba(139, 0, 0, 0.2);
+            border: 1px solid #8B0000;
+            border-radius: 20px;
+            color: #e0e0e0;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Butcherman', cursive;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: #8B0000;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+        }
+
+        .search-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #8B0000 0%, #660000 100%);
+            border: 2px solid #8B0000;
+            border-radius: 25px;
+            color: #fff;
+            font-family: 'Butcherman', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .search-btn:hover {
+            background: linear-gradient(135deg, #FF4444 0%, #8B0000 100%);
+            border-color: #FF4444;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.4);
+            transform: scale(1.02);
+        }
+
+        .people-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .person-card {
+            background: linear-gradient(135deg, #1a0000 0%, #0d0d0d 100%);
+            border: 2px solid #4a0000;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            position: relative;
+            animation: postFloat 6s infinite ease-in-out;
+        }
+
+        .person-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #FF4444, transparent);
+            animation: bloodDrip 4s infinite;
+        }
+
+        .person-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(255, 68, 68, 0.3);
+            border-color: #8B0000;
+        }
+
+        .person-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #4a0000 0%, #000 100%);
+            border: 2px solid #8B0000;
+            margin: 0 auto 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .person-avatar::before {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 32px;
+        }
+
+        .person-name {
+            color: #FF4444;
+            font-family: 'Butcherman', cursive;
+            font-size: 18px;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .person-status {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .person-location {
+            color: #aaa;
+            font-size: 11px;
+            margin-bottom: 15px;
+        }
+
+        .person-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: 1px solid #8B0000;
+            background: rgba(139, 0, 0, 0.2);
+            color: #e0e0e0;
+            border-radius: 5px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Butcherman', cursive;
+        }
+
+        .action-btn:hover {
+            background: #8B0000;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #8B0000, #660000);
+            color: #fff;
+        }
+
+        .action-btn.primary:hover {
+            background: linear-gradient(135deg, #FF4444, #8B0000);
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">Fearbook</div>
+            <div class="search-box">
+                <input type="text" placeholder="Search the damned...">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="nav-icons">
+                <i class="nav-icon fas fa-home" id="homeIcon" title="Return to Nightmare Feed"></i>
+                <i class="nav-icon fas fa-users active" id="peopleIcon" title="Find Lost Souls"></i>
+                <i class="nav-icon fas fa-bell"></i>
+                <i class="nav-icon fas fa-envelope"></i>
+                <i class="nav-icon fas fa-user-circle"></i>
+            </div>
+        </header>
+
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="cobweb cobweb-1"></div>
+            <div class="profile-section">
+                <div class="profile-pic"></div>
+                <div>
+                    <h3 style="color: #FF4444; font-family: 'Butcherman', cursive;">Dark Soul</h3>
+                    <p style="color: #888; font-size: 12px;">Lost in the shadows</p>
+                </div>
+            </div>
+
+            <nav>
+                <a href="nightmare-feed.html" class="menu-item">
+                    <i class="fas fa-rss"></i>
+                    <span>Nightmare Feed</span>
+                </a>
+                <a href="haunted-friends.html" class="menu-item">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Haunted Friends</span>
+                </a>
+                <a href="cult-groups.html" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Cult Groups</span>
+                </a>
+                <a href="black-market.html" class="menu-item">
+                    <i class="fas fa-store"></i>
+                    <span>Black Market</span>
+                </a>
+                <a href="memories-of-the-dead.html" class="menu-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Memories of the Dead</span>
+                </a>
+                <a href="saved-souls.html" class="menu-item">
+                    <i class="fas fa-bookmark"></i>
+                    <span>Saved Souls</span>
+                </a>
+                <a href="dark-events.html" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Dark Events</span>
+                </a>
+                <a href="seance-live.html" class="menu-item">
+                    <i class="fas fa-video"></i>
+                    <span>Séance Live</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1 class="page-title">Find Lost Souls</h1>
+            
+            <!-- Search Section -->
+            <div class="search-section">
+                <input type="text" class="search-input" placeholder="Search for lost souls by name, curse, or haunting location..." id="searchInput">
+                
+                <div class="search-filters">
+                    <div class="filter-btn active" data-filter="all">All Souls</div>
+                    <div class="filter-btn" data-filter="recent">Recently Departed</div>
+                    <div class="filter-btn" data-filter="ancient">Ancient Spirits</div>
+                    <div class="filter-btn" data-filter="nearby">Nearby Hauntings</div>
+                    <div class="filter-btn" data-filter="powerful">Powerful Entities</div>
+                </div>
+                
+                <button class="search-btn" id="searchBtn">
+                    <i class="fas fa-search"></i> Summon Search
+                </button>
+            </div>
+
+            <!-- People Grid -->
+            <div class="people-grid" id="peopleGrid">
+                <div class="person-card">
+                    <div class="person-avatar" style="--avatar: '👻';">👻</div>
+                    <div class="person-name">Phantom Sarah</div>
+                    <div class="person-status">💀 Eternally wandering</div>
+                    <div class="person-location">📍 Abandoned Mansion, Salem</div>
+                    <div class="person-actions">
+                        <div class="action-btn primary">Connect</div>
+                        <div class="action-btn">Message</div>
+                        <div class="action-btn">Haunt</div>
+                    </div>
+                </div>
+
+                <div class="person-card">
+                    <div class="person-avatar" style="--avatar: '🧛';">🧛</div>
+                    <div class="person-name">Count Vladislav</div>
+                    <div class="person-status">🌙 Active during nightfall</div>
+                    <div class="person-location">📍 Gothic Castle, Transylvania</div>
+                    <div class="person-actions">
+                        <div class="action-btn primary">Connect</div>
+                        <div class="action-btn">Message</div>
+                        <div class="action-btn">Haunt</div>
+                    </div>
+                </div>
+
+                <div class="person-card">
+                    <div class="person-avatar" style="--avatar: '🧙';">🧙</div>
+                    <div class="person-name">Witch Morgana</div>
+                    <div class="person-status">🔮 Brewing dark potions</div>
+                    <div class="person-location">📍 Forbidden Forest</div>
+                    <div class="person-actions">
+                        <div class="action-btn primary">Connect</div>
+                        <div class="action-btn">Message</div>
+                        <div class="action-btn">Haunt</div>
+                    </div>
+                </div>
+
+                <div class="person-card">
+                    <div class="person-avatar" style="--avatar: '💀';">💀</div>
+                    <div class="person-name">Grim Reaper</div>
+                    <div class="person-status">⚰️ Collecting souls</div>
+                    <div class="person-location">📍 The Underworld</div>
+                    <div class="person-actions">
+                        <div class="action-btn primary">Connect</div>
+                        <div class="action-btn">Message</div>
+                        <div class="action-btn">Haunt</div>
+                    </div>
+                </div>
+
+                <div class="person-card">
+                    <div class="person-avatar" style="--avatar: '🕷️';">🕷️</div>
+                    <div class="person-name">Spider Queen Arachnia</div>
+                    <div class="person-status">🕸️ Weaving nightmares</div>
+                    <div class="person-location">📍 Dark Web Dimension</div>
+                    <div class="person-actions">
+                        <div class="action-btn primary">Connect</div>
+                        <div class="action-btn">Message</div>
+                        <div class="action-btn">Haunt</div>
+                    </div>
+                </div>
+
+                <div class="person-card">
+                    <div class="person-avatar" style="--avatar: '🔥';">🔥</div>
+                    <div class="person-name">Demon Belzebub</div>
+                    <div class="person-status">👹 Ruling the infernal realm</div>
+                    <div class="person-location">📍 Seventh Circle of Hell</div>
+                    <div class="person-actions">
+                        <div class="action-btn primary">Connect</div>
+                        <div class="action-btn">Message</div>
+                        <div class="action-btn">Haunt</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="right-sidebar">
+            <div class="cobweb cobweb-2"></div>
+            <div class="cobweb cobweb-3"></div>
+
+            <div class="widget">
+                <h3 class="widget-title">Suggested Connections</h3>
+                <div class="friend-suggestion">
+                    <div class="friend-pic"></div>
+                    <div class="friend-info">
+                        <h4>Banshee Mary</h4>
+                        <div class="friend-mutual">3 mutual haunts</div>
+                    </div>
+                </div>
+                <div class="friend-suggestion">
+                    <div class="friend-pic"></div>
+                    <div class="friend-info">
+                        <h4>The Phantom</h4>
+                        <div class="friend-mutual">7 mutual possessions</div>
+                    </div>
+                </div>
+                <div class="friend-suggestion">
+                    <div class="friend-pic"></div>
+                    <div class="friend-info">
+                        <h4>Grave Dancer</h4>
+                        <div class="friend-mutual">1 mutual séance</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <h3 class="widget-title">Recent Activity</h3>
+                <div style="color: #888; font-size: 14px; line-height: 1.6;">
+                    <div style="margin-bottom: 10px;">
+                        <strong style="color: #FF4444;">2 mins ago</strong><br>
+                        Phantom Sarah joined your network
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong style="color: #FF4444;">5 mins ago</strong><br>
+                        Count Vladislav sent you a message
+                    </div>
+                    <div>
+                        <strong style="color: #FF4444;">10 mins ago</strong><br>
+                        Witch Morgana viewed your profile
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <h3 class="widget-title">Search Statistics</h3>
+                <div style="color: #888; font-size: 14px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Total Souls Found:</span>
+                        <span style="color: #FF4444;">1,337</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Active Spirits:</span>
+                        <span style="color: #FF4444;">666</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>New Connections:</span>
+                        <span style="color: #FF4444;">13</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Home icon functionality
+            const homeIcon = document.getElementById('homeIcon');
+            if (homeIcon) {
+                homeIcon.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.9)';
+                    this.style.color = '#FF6666';
+                    setTimeout(() => {
+                        window.location.href = 'nightmare-feed.html';
+                    }, 150);
+                });
+            }
+
+            // Filter functionality
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const peopleGrid = document.getElementById('peopleGrid');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Add glitch effect
+                    this.classList.add('glitch');
+                    setTimeout(() => {
+                        this.classList.remove('glitch');
+                    }, 300);
+                    
+                    // Filter logic would go here
+                    console.log('Filtering by:', this.dataset.filter);
+                });
+            });
+
+            // Search functionality
+            const searchBtn = document.getElementById('searchBtn');
+            const searchInput = document.getElementById('searchInput');
+            
+            searchBtn.addEventListener('click', function() {
+                const query = searchInput.value.trim();
+                if (query) {
+                    // Add loading effect
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Summoning...';
+                    this.disabled = true;
+                    
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fas fa-search"></i> Summon Search';
+                        this.disabled = false;
+                        // Simulate search results
+                        peopleGrid.classList.add('glitch');
+                        setTimeout(() => {
+                            peopleGrid.classList.remove('glitch');
+                        }, 300);
+                    }, 2000);
+                } else {
+                    searchInput.focus();
+                    searchInput.style.borderColor = '#FF4444';
+                    searchInput.style.boxShadow = '0 0 15px rgba(255, 68, 68, 0.5)';
+                }
+            });
+
+            // Enter key search
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchBtn.click();
+                }
+            });
+
+            // Person card interactions
+            const personCards = document.querySelectorAll('.person-card');
+            personCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (!e.target.classList.contains('action-btn')) {
+                        // Show profile preview or navigate to profile
+                        this.classList.add('glitch');
+                        setTimeout(() => {
+                            this.classList.remove('glitch');
+                        }, 300);
+                    }
+                });
+            });
+
+            // Action button functionality
+            const actionBtns = document.querySelectorAll('.action-btn');
+            actionBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const action = this.textContent.trim();
+                    
+                    this.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 100);
+                    
+                    // Show action feedback
+                    const originalText = this.textContent;
+                    this.textContent = action === 'Connect' ? 'Connecting...' : 
+                                      action === 'Message' ? 'Messaging...' : 'Haunting...';
+                    
+                    setTimeout(() => {
+                        this.textContent = originalText;
+                    }, 1000);
+                });
+            });
+        });
+
+        // Add random glitch effects
+        setInterval(() => {
+            const elements = document.querySelectorAll('.person-card, .widget, .menu-item');
+            const randomElement = elements[Math.floor(Math.random() * elements.length)];
+            randomElement.classList.add('glitch');
+            setTimeout(() => {
+                randomElement.classList.remove('glitch');
+            }, 300);
+        }, 5000);
+
+        // Flickering text effect
+        setInterval(() => {
+            const textElements = document.querySelectorAll('.person-name, .widget-title');
+            const randomText = textElements[Math.floor(Math.random() * textElements.length)];
+            randomText.style.textShadow = '0 0 10px #FF0000, 0 0 20px #FF0000';
+            setTimeout(() => {
+                randomText.style.textShadow = '1px 1px 2px #000';
+            }, 150);
+        }, 3000);
+
+        // Random blood drips
+        function createBloodDrip() {
+            const drip = document.createElement('div');
+            drip.className = 'blood-drip';
+            drip.style.left = Math.random() * 100 + '%';
+            drip.style.animationDelay = Math.random() * 3 + 's';
+            document.body.appendChild(drip);
+
+            setTimeout(() => {
+                drip.remove();
+            }, 5000);
+        }
+
+        setInterval(createBloodDrip, 8000);
+    </script>
+</body>
+</html>
